@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: inviolavel-wms-db
+    environment:
+      POSTGRES_USER: inviolavel_user
+      POSTGRES_PASSWORD: inviolavel_password
+      POSTGRES_DB: inviolavel_wms
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+  backend:
+    build: ./backend
+    container_name: inviolavel-wms-backend
+    ports:
+      - "3001:3001"
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=inviolavel_user
+      - DB_PASSWORD=inviolavel_password
+      - DB_NAME=inviolavel_wms
+      - PORT=3001
+    depends_on:
+      - postgres
+    restart: always
+
+  frontend:
+    build: ./frontend
+    container_name: inviolavel-wms-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: always
+
+volumes:
+  postgres_data:

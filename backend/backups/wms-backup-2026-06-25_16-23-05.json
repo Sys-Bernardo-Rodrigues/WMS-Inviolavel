@@ -1,0 +1,89 @@
+{
+  "fornecedores": [],
+  "produtos_estoque": [
+    {
+      "id_produto": "d3f3d0a4-fc78-41ce-aa70-3d5fa2cfa700",
+      "name": "teste",
+      "sku": "teste",
+      "category": "Electronics",
+      "estoque_atual": "20.0000",
+      "estoque_minimo": "1.0000",
+      "ultima_entrada": "2026-06-25T17:26:17.437Z",
+      "ultima_saida": null,
+      "dias_sem_venda": 0,
+      "saldo_negativo": false,
+      "quantidade_negativa": "0.0000",
+      "venda_bloqueada": false,
+      "permitir_backorder": false,
+      "item_critico": false,
+      "location": "a-1-1",
+      "criado_em": "2026-06-25T17:13:00.436Z",
+      "atualizado_em": "2026-06-25T17:26:17.437Z",
+      "price": "1.00"
+    }
+  ],
+  "lixeira_estoque": [],
+  "movimentacoes": [
+    {
+      "id_movimentacao": "d2dce6b1-8ba9-4ea5-8ff2-3d197ddd68d4",
+      "id_produto": "d3f3d0a4-fc78-41ce-aa70-3d5fa2cfa700",
+      "tipo_movimentacao": "ENTRADA",
+      "subtipo_movimentacao": "AJUSTE_INVENTARIO",
+      "quantidade": "19.0000",
+      "estoque_origem": "AUDITORIA_SISTEMA",
+      "estoque_destino": "CONFERENCIA_FISICA",
+      "data_movimentacao": "2026-06-25T17:26:17.437Z",
+      "numero_os": "AUDIT-6D8155F8"
+    }
+  ],
+  "planejamento_compras": [
+    {
+      "id_planejamento_compra": "e2c99354-d18b-432d-93cf-410afdab998d",
+      "id_produto": "d3f3d0a4-fc78-41ce-aa70-3d5fa2cfa700",
+      "quantidade_a_comprar": "0.0000",
+      "fornecedor_principal_id": null,
+      "prazo_entrega_estimado_dias": 0,
+      "data_ultima_compra": null,
+      "consumo_medio_mensal": "0.0000"
+    }
+  ],
+  "tarefas_conferencia": [
+    {
+      "id_tarefa": "6d8155f8-ae41-42cf-a5f2-9469d4b3071c",
+      "id_produto": "d3f3d0a4-fc78-41ce-aa70-3d5fa2cfa700",
+      "tipo_tarefa": "CONFERENCIA_SALDO",
+      "data_geracao": "2026-06-25T17:24:00.866Z",
+      "status": "CONCLUIDO",
+      "quantidade_esperada": "1.0000",
+      "quantidade_conferida": "20.0000",
+      "data_conclusao": "2026-06-25T17:26:17.437Z",
+      "observacao": null
+    }
+  ],
+  "usuarios": [
+    {
+      "id_usuario": "688756c0-5b80-4933-a454-2f50138d0039",
+      "username": "admin",
+      "password_hash": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
+      "nome": "Administrador Inviolável",
+      "perfil": "admin",
+      "criado_em": "2026-06-25T18:56:13.219Z"
+    },
+    {
+      "id_usuario": "f38b8dbe-803a-4b3f-97a4-7f71d883add7",
+      "username": "operador",
+      "password_hash": "e257b110509437aaceddbd342bc63d05e74221d6bac056ed279d752ff8d3afcb",
+      "nome": "Operador WMS",
+      "perfil": "operador",
+      "criado_em": "2026-06-25T18:56:13.219Z"
+    },
+    {
+      "id_usuario": "c0c1759d-48e9-411f-a6bd-f313830c9e7f",
+      "username": "auditor",
+      "password_hash": "c5a62ce3fa7f6d86af0009389ccd815277691ea64da0c5c98e302bb13dd59248",
+      "nome": "Auditor WMS",
+      "perfil": "auditor",
+      "criado_em": "2026-06-25T18:56:13.219Z"
+    }
+  ]
+}
