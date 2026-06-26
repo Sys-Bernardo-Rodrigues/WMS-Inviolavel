@@ -13,60 +13,23 @@ O sistema possui uma arquitetura moderna dividida em três pilares principais:
 
 ```mermaid
 graph TD
-    A[Instalar Node.js & npm] --> B[Instalar Docker & Docker Compose]
-    B --> C[Subir o Banco de Dados via Docker Compose]
-    C --> D[Configurar e Iniciar o Backend]
-    D --> E[Configurar e Iniciar o Frontend]
-    E --> F[Acessar e Testar o Sistema]
+    A[Instalar Docker & Docker Compose] --> B[Criar arquivo .env (opcional)]
+    B --> C[Subir Aplicação via Docker Compose: docker compose up -d]
+    C --> D[Acessar o Frontend em http://localhost]
 ```
 
 ---
 
 ## 🛠️ 1. Pré-requisitos: Instalação das Ferramentas Base
 
-Se você já possui o Node.js e o Docker instalados, pode pular diretamente para a **Seção 2**. Caso contrário, siga as instruções abaixo para o seu sistema operacional.
+Para rodar todo o sistema de forma integrada em contêineres, você só precisa do **Docker** e do **Docker Compose**. Caso prefira rodar localmente fora de contêineres para fins de desenvolvimento, você também precisará do **Node.js**.
 
-### A. Node.js & npm
+### A. Docker & Docker Compose (Recomendado)
 
-O Node.js é o ambiente de execução JavaScript utilizado para rodar o backend e o servidor de desenvolvimento do frontend.
-
-#### 📦 Instalação via NVM (Recomendado para macOS/Linux)
-O Node Version Manager (NVM) permite gerenciar múltiplas versões do Node.js facilmente.
-
-*   **macOS / Linux:**
-    ```bash
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-    ```
-    Reinicie o terminal e instale a versão LTS do Node:
-    ```bash
-    nvm install --lts
-    nvm use --lts
-    ```
-
-#### 💻 Instalação Direta
-*   **Windows / macOS:** Baixe e execute o instalador oficial da versão **LTS (Recomendada para a maioria dos usuários)** diretamente em [nodejs.org](https://nodejs.org/).
-*   **Linux (Ubuntu/Debian):**
-    ```bash
-    curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-    sudo apt-get install -y nodejs
-    ```
-
-> [!NOTE]
-> **Verificação:** Para garantir que a instalação ocorreu com sucesso, execute em seu terminal:
-> ```bash
-> node -v
-> npm -v
-> ```
-> O Node deve reportar versão `v18.x` ou superior, e o npm `v9.x` ou superior.
-
----
-
-### B. Docker & Docker Compose
-
-O Docker permite empacotar a aplicação e suas dependências dentro de contêineres virtuais. Usaremos o Docker para criar uma instância limpa do banco de dados PostgreSQL sem poluir o sistema operacional host.
+O Docker permite empacotar a aplicação, o backend e o banco de dados dentro de contêineres virtuais isolados.
 
 *   **Windows / macOS:** Baixe e instale o **Docker Desktop** em [docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop).
-    *   *Nota para Windows:* Certifique-se de habilitar o WSL 2 (Windows Subsystem for Linux) durante a instalação do Docker Desktop.
+    *   *Nota para Windows:* Certifique-se de habilitar o WSL 2 (Windows Subsystem for Linux) durante a instalação.
 *   **Linux (Debian/Ubuntu):** Instale os pacotes `docker-ce` e `docker-compose-plugin` seguindo as instruções oficiais da sua distribuição.
     *   Certifique-se de adicionar seu usuário ao grupo docker para executar comandos sem `sudo`: `sudo usermod -aG docker $USER` e reinicie a sessão.
 
@@ -77,97 +40,105 @@ O Docker permite empacotar a aplicação e suas dependências dentro de contêin
 > docker compose version
 > ```
 
+### B. Node.js & npm (Opcional - Apenas para Desenvolvimento Local)
+
+O Node.js só é necessário se você optar pelo **Método de Desenvolvimento Local** (fora do Docker).
+
+*   **macOS / Linux:** Recomendamos usar o NVM para instalar:
+    ```bash
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+    # Reinicie o terminal
+    nvm install --lts
+    nvm use --lts
+    ```
+*   **Windows / macOS (Instalador):** Baixe e execute o instalador oficial diretamente em [nodejs.org](https://nodejs.org/).
+
 ---
 
-## 🚀 2. Inicializando o Banco de Dados (PostgreSQL via Docker)
+## 🐳 2. Método Recomendado: Inicialização Completa via Docker Compose
 
-O arquivo `docker-compose.yml` está localizado na pasta raiz do projeto e contém a definição do contêiner do PostgreSQL.
+Este método compila e executa todo o ecossistema do WMS (Banco de Dados, Backend e Frontend) em contêineres Docker, sem a necessidade de instalar Node.js ou npm localmente na sua máquina hospedeira.
 
 ### Passo a Passo:
 
-1. Abra o terminal e navegue até a pasta raiz do projeto (`INVENTORY-VIS/`).
-2. Execute o comando a seguir para inicializar o contêiner do banco de dados em segundo plano (*detached mode*):
-   ```bash
-   docker compose up -d
+1. **Configuração Opcional (Google Gemini AI):**
+   Para habilitar o assistente de IA, crie um arquivo `.env` na raiz do projeto (`INVENTORY-VIS/`) e defina a sua chave de API:
+   ```env
+   GEMINI_API_KEY=sua_chave_de_api_aqui
    ```
-3. Verifique se o contêiner está ativo e rodando normalmente:
+
+2. **Iniciar todos os Serviços:**
+   Na pasta raiz do projeto, execute o comando a seguir para construir as imagens e subir os contêineres em segundo plano:
+   ```bash
+   docker compose up -d --build
+   ```
+
+3. **Verificar os Contêineres:**
+   Confira se todos os três contêineres estão ativos:
    ```bash
    docker compose ps
    ```
-   Você deverá ver uma saída indicando que o contêiner `wms_postgres` está `Up` (Ativo) e mapeado na porta `5432`.
+   Você deverá ver uma saída similar a esta:
+   *   `inviolavel-wms-db` (Porta 5432) -> Banco relacional PostgreSQL
+   *   `inviolavel-wms-backend` (Porta 3001) -> API REST
+   *   `inviolavel-wms-frontend` (Porta 80) -> Servidor Nginx que entrega a interface React
 
-### Informações de Acesso ao Banco de Dados:
-*   **Host:** `localhost`
-*   **Porta (Port):** `5432`
-*   **Usuário (Username):** `inviolavel_user`
-*   **Senha (Password):** `inviolavel_password`
-*   **Nome do Banco (Database):** `inviolavel_wms`
+4. **Acessar o Sistema:**
+   *   **Frontend (Interface Web):** Abra no navegador [http://localhost](http://localhost) (porta padrão HTTP 80).
+   *   **Backend (API):** Acessível em [http://localhost:3001](http://localhost:3001).
 
-> [!WARNING]
-> Se você já tiver um serviço PostgreSQL rodando nativamente na sua máquina hospedeira, ocorrerá um conflito na porta `5432`. Consulte a **Seção de Resolução de Problemas (Troubleshooting)** no final deste guia para saber como desativar o serviço local temporariamente.
-
----
-
-## ⚙️ 3. Configuração e Inicialização do Backend
-
-O backend é a API REST que gerencia a lógica de negócios, auditorias, controle de concorrência por bloqueio de linhas do banco, e o motor de automação de backups.
-
-1. No terminal, navegue até a pasta `backend`:
-   ```bash
-   cd backend
-   ```
-2. Instale todas as dependências do Node.js listadas no [package.json](file:///Users/bernardo/INVENTORY-VIS/backend/package.json):
-   ```bash
-   npm install
-   ```
-3. **Configuração das Variáveis de Ambiente (`.env`):**
-   Crie um arquivo chamado `.env` dentro da pasta `backend/` com as configurações de porta e credenciais do banco de dados.
-   
-   Você pode criar o arquivo e colar a estrutura abaixo:
-   ```env
-   PORT=3001
-   DB_HOST=localhost
-   DB_PORT=5432
-   DB_USER=inviolavel_user
-   DB_PASSWORD=inviolavel_password
-   DB_NAME=inviolavel_wms
-   GEMINI_API_KEY=sua_chave_de_api_opcional_aqui
-   ```
-   *(Substitua `sua_chave_de_api_opcional_aqui` por uma API Key do Google Gemini se desejar obter sugestões reais baseadas em IA).*
-
-4. Execute o servidor em ambiente de desenvolvimento:
-   ```bash
-   npm run dev
-   ```
-
-> [!TIP]
-> **Autoinicialização Automática:** Na primeira vez que o backend inicia, ele detecta se as tabelas existem no banco. Se não existirem, ele cria automaticamente todo o esquema relacional, incluindo triggers PL/pgSQL avançados para controle de concorrência, índices de performance e carrega dados de teste (*seed* de produtos, movimentações, posições no estoque e usuários).
+5. **Gerenciar os Contêineres:**
+   *   **Ver Logs em Tempo Real:**
+       ```bash
+       docker compose logs -f
+       ```
+       Ou para um serviço específico (ex: backend):
+       ```bash
+       docker compose logs -f backend
+       ```
+   *   **Parar a Aplicação:**
+       ```bash
+       docker compose down
+       ```
 
 ---
 
-## 🖥️ 4. Configuração e Inicialização do Frontend
+## 🛠️ 3. Método Alternativo: Desenvolvimento Híbrido (Local + DB no Docker)
 
-O frontend é uma aplicação de página única (SPA) de alta fidelidade visual, construída em React, que se comunica diretamente com a API do backend na porta `3001`.
+Se você estiver desenvolvendo ou editando o código em tempo real, pode preferir rodar apenas o banco no Docker e o backend/frontend localmente para aproveitar o *Hot Module Replacement (HMR)*.
 
-1. Abra uma nova janela ou aba de terminal na raiz do projeto.
-2. Navegue até a pasta `frontend`:
+### Passo a Passo:
+
+1. **Subir Apenas o Banco de Dados:**
+   Na pasta raiz do projeto, execute:
    ```bash
-   cd frontend
+   docker compose up -d postgres
    ```
-3. Instale as dependências de desenvolvimento e de interface:
-   ```bash
-   npm install
-   ```
-4. Inicie o servidor local de desenvolvimento do Vite:
-   ```bash
-   npm run dev
-   ```
-5. Acesse a aplicação no seu navegador através do endereço exibido no console:
-   *   **URL Padrão:** [http://localhost:5173](http://localhost:5173)
+
+2. **Configurar e Iniciar o Backend:**
+   *   Navegue até a pasta `backend`: `cd backend`
+   *   Instale as dependências: `npm install`
+   *   Crie o arquivo `backend/.env` com a seguinte configuração:
+       ```env
+       PORT=3001
+       DB_HOST=localhost
+       DB_PORT=5432
+       DB_USER=inviolavel_user
+       DB_PASSWORD=inviolavel_password
+       DB_NAME=inviolavel_wms
+       GEMINI_API_KEY=sua_chave_de_api_opcional_aqui
+       ```
+   *   Inicie em modo de desenvolvimento: `npm run dev`
+
+3. **Configurar e Iniciar o Frontend:**
+   *   Abra outro terminal e navegue até a pasta `frontend`: `cd frontend`
+   *   Instale as dependências: `npm install`
+   *   Inicie o servidor de desenvolvimento Vite: `npm run dev`
+   *   Acesse no navegador: [http://localhost:5173](http://localhost:5173)
 
 ---
 
-## 🔑 5. Perfis de Acesso Cadastrados (RBAC)
+## 🔑 4. Perfis de Acesso Cadastrados (RBAC)
 
 O sistema conta com Controle de Acesso Baseado em Funções (Role-Based Access Control). Na primeira execução do backend, as seguintes contas padrão são populadas no banco para fins de homologação:
 
@@ -179,7 +150,7 @@ O sistema conta com Controle de Acesso Baseado em Funções (Role-Based Access C
 
 ---
 
-## 💾 6. Funcionamento da Central de Backups
+## 💾 5. Funcionamento da Central de Backups
 
 A plataforma possui um sistema integrado de gerenciamento de backups do banco de dados relacional:
 
@@ -189,7 +160,7 @@ A plataforma possui um sistema integrado de gerenciamento de backups do banco de
 
 ---
 
-## 🔍 7. Resolução de Problemas Comuns (Troubleshooting)
+## 🔍 6. Resolução de Problemas Comuns (Troubleshooting)
 
 ### A. Erro: "Port 5432 is already in use" ao rodar o Docker Compose
 Este erro ocorre se você já possui um servidor PostgreSQL instalado diretamente em sua máquina host física rodando em segundo plano.
@@ -213,17 +184,23 @@ Este erro ocorre se você já possui um servidor PostgreSQL instalado diretament
 Isso indica que a interface web não conseguiu se conectar à API backend (porta `3001`). O sistema entra em modo de demonstração offline usando dados do `localStorage` para evitar que a operação pare, mas não sincroniza com o banco de dados principal.
 
 *   **Como resolver:**
-    1. Verifique se o terminal do backend não travou ou reportou erros de conexão.
-    2. Garanta que você executou `npm run dev` na pasta `backend/`.
-    3. Certifique-se de que a variável `PORT=3001` no arquivo `.env` do backend está corretamente configurada.
+    *   **Se estiver usando Docker Compose (Recomendado):**
+        1. Verifique se o contêiner do backend está ativo rodando `docker compose ps`.
+        2. Analise os logs do backend para identificar falhas de inicialização ou conexões malsucedidas com o banco de dados: `docker compose logs backend`.
+        3. Certifique-se de que a porta `3001` no host não está ocupada por outra aplicação.
+    *   **Se estiver rodando localmente (Desenvolvimento Híbrido):**
+        1. Verifique se o terminal do backend não travou ou reportou erros de conexão.
+        2. Garanta que você executou `npm run dev` na pasta `backend/`.
+        3. Certifique-se de que a variável `PORT=3001` no arquivo `.env` do backend está corretamente configurada.
 
 ### C. Recomendações de Compra por Inteligência Artificial aparecem como "local-simulation"
 Se o painel do assistente de inteligência artificial exibir simulações estáticas em vez de análises detalhadas personalizadas:
 
 *   **Como resolver:**
     1. Crie uma chave de API gratuita no [Google AI Studio](https://aistudio.google.com/).
-    2. Adicione-a ao arquivo `.env` do backend na variável `GEMINI_API_KEY`.
-    3. Reinicie o servidor do backend.
+    2. Adicione a chave à variável `GEMINI_API_KEY`:
+       *   **No Docker Compose:** Crie o arquivo `.env` na raiz do projeto contendo `GEMINI_API_KEY=sua_chave_aqui` e reinicie a aplicação com `docker compose down && docker compose up -d`.
+       *   **No modo local:** Adicione-a no arquivo `backend/.env` e reinicie o servidor backend.
 
 ---
 *WMS Inviolável — Desenvolvido com excelência técnica por Bernardo Rodrigues.*

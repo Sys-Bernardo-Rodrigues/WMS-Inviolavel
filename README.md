@@ -47,43 +47,54 @@ INVENTORY-VIS/
 
 ---
 
-## 🚀 Setup & Execution
+## 🚀 Setup & Execution (Docker Compose - Recommended)
 
 ### 1. Prerequisites
-Ensure you have **Node.js** (v18+), **npm**, and **Docker** installed.
+Ensure you have **Docker** and **Docker Compose** installed.
 
 ---
 
-### 2. Booting the Database Container
+### 2. Run the Entire System
 
-Start the PostgreSQL database service at the project root:
+Start the WMS Inviolável services (Database, Backend, and Frontend) at the project root:
 ```bash
-docker compose up -d
+docker compose up -d --build
 ```
-The database will be hosted on `localhost:5432` mapped with standard credentials:
-*   **User:** `inviolavel_user`
-*   **Password:** `inviolavel_password`
-*   **Database:** `inviolavel_wms`
+
+Access:
+*   **Frontend (Interface Web):** [http://localhost](http://localhost) (Porta 80)
+*   **Backend (API):** [http://localhost:3001](http://localhost:3001)
+
+Para ver os logs dos serviços rodando:
+```bash
+docker compose logs -f
+```
+
+Para desligar todos os serviços:
+```bash
+docker compose down
+```
 
 ---
 
-### 3. Running the Backend Server
+### 3. Running in Development Mode (Hybrid)
 
-```bash
-cd backend
-npm install
-npm run dev
-```
-The backend initializes the schemas, SQL enums, indices, and PostgreSQL triggers automatically on startup and binds to [http://localhost:3001](http://localhost:3001).
+Se preferir rodar o backend e o frontend em modo de desenvolvimento local com Hot Reload:
 
----
-
-### 4. Running the Frontend Dashboard
-
-In a new terminal window:
-```bash
-cd frontend
-npm install
-npm run dev
-```
-Open [http://localhost:5173](http://localhost:5173) in your browser.
+1. **Subir apenas o banco de dados:**
+   ```bash
+   docker compose up -d postgres
+   ```
+2. **Executar o Backend localmente:**
+   ```bash
+   cd backend
+   npm install
+   npm run dev
+   ```
+3. **Executar o Frontend localmente:**
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
+   Acesse [http://localhost:5173](http://localhost:5173) no seu navegador.

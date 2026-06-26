@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:15-alpine
@@ -26,6 +24,7 @@ services:
       - DB_PASSWORD=inviolavel_password
       - DB_NAME=inviolavel_wms
       - PORT=3001
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
     depends_on:
       - postgres
     restart: always
