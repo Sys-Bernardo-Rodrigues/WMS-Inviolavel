@@ -19,7 +19,23 @@ pool.on('error', (err) => {
 
 // Initialize database schema, triggers, and seed data
 export async function initializePostgres() {
-  const client = await pool.connect();
+  let client: any;
+  let retries = 10;
+  while (retries > 0) {
+    try {
+      client = await pool.connect();
+      break;
+    } catch (err) {
+      retries -= 1;
+      console.error(`PostgreSQL connection failed. Retrying in 3 seconds... (${retries} attempts remaining)`);
+      if (retries === 0) {
+        console.error('Could not connect to PostgreSQL. Exiting...');
+        throw err;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+    }
+  }
+
   try {
     console.log('Initializing PostgreSQL database schema...');
     
