@@ -1393,9 +1393,25 @@ function App() {
   };
 
   const handleAddLevel = () => {
-    const nextLvl = levels.length > 0 ? Math.max(...levels) + 1 : 1;
-    if (nextLvl > 10) {
-      addToast('error', 'O limite máximo recomendado é de 10 níveis de prateleiras.');
+    let firstMissing = 1;
+    while (levels.includes(firstMissing)) {
+      firstMissing++;
+    }
+
+    const input = window.prompt(`Digite o número do nível que deseja adicionar (sugerido: ${firstMissing}):`, String(firstMissing));
+    if (input === null) return;
+    
+    const nextLvl = parseInt(input, 10);
+    if (isNaN(nextLvl) || nextLvl <= 0) {
+      addToast('error', 'Por favor, insira um número inteiro positivo maior que 0.');
+      return;
+    }
+    if (nextLvl > 20) {
+      addToast('error', 'O limite máximo recomendado é de 20 níveis de prateleiras.');
+      return;
+    }
+    if (levels.includes(nextLvl)) {
+      addToast('error', `O nível ${nextLvl} já existe.`);
       return;
     }
     const updated = [...levels, nextLvl].sort((a, b) => a - b);
@@ -4038,11 +4054,20 @@ function App() {
                               justifyContent: 'space-between',
                               position: 'relative',
                               transition: 'var(--transition-smooth)',
-                              cursor: locItem && currentUser?.perfil === 'admin' ? 'pointer' : 'default'
+                              cursor: currentUser?.perfil === 'admin' ? 'pointer' : 'default'
                             }}
                             onClick={() => {
-                              if (locItem && currentUser?.perfil === 'admin') {
-                                handleEditClick(locItem);
+                              if (currentUser?.perfil === 'admin') {
+                                if (locItem) {
+                                  handleEditClick(locItem);
+                                } else {
+                                  resetForm();
+                                  setFormData(prev => ({
+                                    ...prev,
+                                    location: locCode
+                                  }));
+                                  setIsAddModalOpen(true);
+                                }
                               }
                             }}
                           >

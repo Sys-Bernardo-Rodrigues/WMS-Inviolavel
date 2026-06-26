@@ -21,7 +21,7 @@ graph TD
 ---
 
 ## 🛠️ 1. Pré-requisitos: Instalação das Ferramentas Base
-
+                                                                                                                                                                                                                                                                                
 Para rodar todo o sistema de forma integrada em contêineres, você só precisa do **Docker** e do **Docker Compose**. Caso prefira rodar localmente fora de contêineres para fins de desenvolvimento, você também precisará do **Node.js**.
 
 ### A. Docker & Docker Compose (Recomendado)
